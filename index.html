@@ -1,0 +1,86 @@
+<head>
+    <title> [小說書名] </title> 
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript" src="tools.js?v0.3.4"></script>
+</head>
+
+<body >
+
+<div class="row">
+    <div class="col-md-8 col-md-offset-2 div-body">
+        <div class="page-header">
+            <h1 class="novel-title">[小說書名]</h1>
+        </div>
+    </div>
+</div>
+
+<script language="javascript">
+
+window.onload=init;
+
+function init(){
+    
+    novel_title = $("h1.novel-title");
+    div_body = $("div.div-body");
+
+    getArrayByFilename("info.txt", function(arr){
+        novel_title.html(arr[0]);
+    });
+
+    getArrayByFilename("chapters.txt", function(arr){
+
+        var i = 0;
+        asyncFor();
+        function asyncFor(){
+            if(i >= arr.length) 
+                return;
+
+            var chapter_name = arr[i];
+            
+            if(chapter_name == ""){
+                i += 1;
+                asyncFor();
+                return;
+            }
+
+            var newdiv = getNewDiv(); 
+            var newdiv_head = getNewDiv(); 
+            var newdiv_body = getNewDiv(); 
+            var newdiv_list = getNewDiv();
+
+            newdiv.addClass("panel panel-default");
+            newdiv_head.addClass("panel-heading");
+            newdiv_head.html('<h3 class="panel-title">' + chapter_name+ '</h3>')
+            newdiv_body.addClass("panel-body");
+            newdiv_list.addClass("list-group");
+
+            getArrayByFilename(chapter_name + "/list.txt", function(arr2){
+                for(var j = 0;j < arr2.length;j++){
+                    var tt = arr2[j];
+                    if(tt == "")
+                        continue;
+                    ahref = "content.html?chapter=" + chapter_name + "&tt=" + tt;
+                    newdiv_list.append('<a href="' + ahref + '" class="list-group-item">' + tt + '</a>');
+                }
+
+                newdiv_body.append(newdiv_list);
+                newdiv.append(newdiv_head);
+                newdiv.append(newdiv_body);
+                div_body.append(newdiv);
+                i += 1;
+                asyncFor();
+            });
+        }
+    });
+
+}
+
+</script>
+
+
+</body>
