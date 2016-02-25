@@ -39,7 +39,7 @@ function init(){
     $("h1.chap-title").html(dict["chapter"]);
     $("h3.tt-title").html(dict["tt"]);
     $.get(dict["chapter"] + "/" + dict["tt"] + ".txt" , function(res){
-        $("div.tt-body").html(res.replace("\n", "<br>"));
+        $("div.tt-body").html(res.replace(/\n/g, "<br>"));
     });
 
     novel_title = $("h1.novel-title");
