@@ -5,7 +5,6 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-    <script src="https://cdn.rawgit.com/showdownjs/showdown/1.3.0/dist/showdown.min.js"></script>
 
     <script type="text/javascript" src="tools.js?v0.3.6"></script>
 
@@ -25,37 +24,15 @@
                 </div>
             </div>
         </div>
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title tt-title">[節名]</h3>
-            </div>
-            <div class="panel-body tt-body">
-                [行一] <br><br>
-                [行二]
-            </div>
-        </div>
+        本書介紹
     </div>
 </div>
 
 <script language="javascript">
 
 window.onload=init;
-var converter = new showdown.Converter();
 
 function init(){
-    dict = getParametersDict();
-    $("h3.tt-title").html(dict["chapter"] + "/" + removeFileExt(dict["tt"]));
-
-    if(getFileExtByFilename(dict["tt"]) == "md"){
-        $.get(dict["chapter"] + "/" + dict["tt"], function(res){
-            $("div.tt-body").html(converter.makeHtml(res));
-        });
-    }else{
-        $.get(dict["chapter"] + "/" + dict["tt"] + ".txt", function(res){
-            $("div.tt-body").html(res.replace(/\n/g, "<br>"));
-        });
-    }
-
     novel_title = $("h1.novel-title");
 
     getArrayByFilename("info.txt", function(arr){
