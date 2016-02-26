@@ -30,6 +30,7 @@ function init(){
 
     getArrayByFilename("info.txt", function(arr){
         novel_title.html(arr[0]);
+        document.title = arr[0];
     });
 
     getArrayByFilename("chapters.txt", function(arr){
