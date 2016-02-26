@@ -26,3 +26,33 @@ function getParametersDict(){
     
     return dict;
 }
+
+function getFileExtByFilename(filename){
+    if(filename == "")
+        return "";
+    
+    var ret = "";
+    for(var i = filename.length-1; i >= 0;i--){
+        if(filename[i] == "."){
+            flag = true;
+            break;
+        }
+        ret = filename[i] + ret;
+    }
+
+    if(ret == filename)
+        return "";
+
+    return ret;
+}
+
+function removeFileExt(filename){
+    var ret = "";
+    for(var i = 0;i < filename.length;i++){
+        if(filename[i] == ".")
+            break;
+        ret += filename[i];
+    }
+
+    return ret;
+}

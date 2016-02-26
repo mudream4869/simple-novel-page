@@ -5,8 +5,9 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="https://cdn.rawgit.com/showdownjs/showdown/1.3.0/dist/showdown.min.js"></script>
 
-    <script type="text/javascript" src="tools.js?v0.3.5"></script>
+    <script type="text/javascript" src="tools.js?v0.3.6"></script>
 
 </head>
 
@@ -33,14 +34,22 @@
 <script language="javascript">
 
 window.onload=init;
+var converter = new showdown.Converter();
 
 function init(){
     dict = getParametersDict();
     $("h1.chap-title").html(dict["chapter"]);
-    $("h3.tt-title").html(dict["tt"]);
-    $.get(dict["chapter"] + "/" + dict["tt"] + ".txt" , function(res){
-        $("div.tt-body").html(res.replace(/\n/g, "<br>"));
-    });
+    $("h3.tt-title").html(removeFileExt(dict["tt"]));
+
+    if(getFileExtByFilename(dict["tt"]) == "md"){
+        $.get(dict["chapter"] + "/" + dict["tt"], function(res){
+            $("div.tt-body").html(converter.makeHtml(res));
+        });
+    }else{
+        $.get(dict["chapter"] + "/" + dict["tt"] + ".txt", function(res){
+            $("div.tt-body").html(res.replace(/\n/g, "<br>"));
+        });
+    }
 
     novel_title = $("h1.novel-title");
 

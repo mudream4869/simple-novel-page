@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 
-    <script type="text/javascript" src="tools.js?v0.3.4"></script>
+    <script type="text/javascript" src="tools.js?v0.3.6"></script>
 </head>
 
 <body >
@@ -65,7 +65,7 @@ function init(){
                     if(tt == "")
                         continue;
                     ahref = "content.html?chapter=" + chapter_name + "&tt=" + tt;
-                    newdiv_list.append('<a href="' + ahref + '" class="list-group-item">' + tt + '</a>');
+                    newdiv_list.append('<a href="' + ahref + '" class="list-group-item">' + removeFileExt(tt) + '</a>');
                 }
 
                 newdiv_body.append(newdiv_list);
