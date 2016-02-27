@@ -5,6 +5,16 @@ function getArrayByFilename(filename, callback){
     });
 }
 
+function getArrayByString(input_str){
+    var arr = input_str.replace(/\n/g, " ").split(" ");
+    var ret_arr = [];
+    for(var i = 0; i < arr.length;i++)
+        if(arr[i] != "")
+            ret_arr.push(arr[i]);
+
+    return ret_arr;
+}
+
 function getNewDiv(){
     return $(document.createElement("div"));
 }

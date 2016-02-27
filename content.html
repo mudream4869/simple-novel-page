@@ -7,7 +7,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <script src="https://cdn.rawgit.com/showdownjs/showdown/1.3.0/dist/showdown.min.js"></script>
 
-    <script type="text/javascript" src="tools.js?v0.3.6"></script>
+    <script type="text/javascript" src="tools.js?v0.3.7"></script>
 
 </head>
 
@@ -34,6 +34,16 @@
                 [行二]
             </div>
         </div>
+        <nav>
+            <ul class="pager">
+                <li class="previous disabled">
+                    <a href="#" class="previous"><span aria-hidden="true">&larr;</span> Older</a>
+                </li>
+                <li class="next disabled">
+                    <a href="#" class="next">Newer <span aria-hidden="true">&rarr;</span></a>
+                </li>
+            </ul>
+        </nav>
     </div>
 </div>
 
@@ -62,6 +72,79 @@ function init(){
         novel_title.html(arr[0]);
         document.title = arr[0];
     });
+
+    next_btn_enable = false;
+    prev_btn_enable = false;
+    next_url = "";
+    prev_url = "";
+
+    $.when($.ajax("chapters.txt"), $.ajax(dict["chapter"] + "/" + "list.txt")).done(function(chap, tt){
+        var chap_list = getArrayByString(chap[0]);
+        var tt_list = getArrayByString(tt[0]);
+        var chap_id = chap_list.indexOf(dict["chapter"]);
+        var tt_id = tt_list.indexOf(dict["tt"]);
+
+        // Not the first page: do the prev-page button
+        if(chap_id || tt_id){
+            var prev_chap_id = chap_id;
+            var prev_tt_id = tt_id - 1;
+            if(prev_tt_id == -1){
+                prev_chap_id -= 1;
+
+                $.get(chap_list[prev_chap_id] + "/list.txt", function(res){
+                    var prev_tt_list = getArrayByString(res);
+                    if(prev_tt_id == -1)
+                        prev_tt_id = prev_tt_list.length - 1;
+                    prev_url = "content.html?chapter=" + chap_list[prev_chap_id] + 
+                                "&tt=" + prev_tt_list[prev_tt_id];
+                    $("a.previous").attr("href", prev_url);
+                    prev_btn_enable = true;
+                });
+            }else{
+                prev_url = "content.html?chapter=" + chap_list[chap_id] + 
+                            "&tt=" + tt_list[prev_tt_id];
+                $("a.previous").attr("href", prev_url);
+                prev_btn_enable = true;
+            }
+
+            $("li.previous").removeClass("disabled");
+        }
+
+        if(chap_id != chap_list.length - 1 || tt_id != tt_list.length - 1){
+            var next_chap_id = chap_id;
+            var next_tt_id = tt_id + 1;
+            if(next_tt_id == chap_list.length){
+                next_tt_id = 0, next_chap_id += 1;
+            
+                $.get(chap_list[next_chap_id] + "/list.txt", function(res){
+                    var next_tt_list = getArrayByString(res);
+                    next_url = "content.html?chapter=" + chap_list[next_chap_id] + 
+                                "&tt=" + next_tt_list[next_tt_id];
+                    $("a.next").attr("href", next_url);
+                    next_btn_enable = true;
+                });
+            }else{
+                next_url = "content.html?chapter=" + chap_list[chap_id] + 
+                            "&tt=" + tt_list[next_tt_id];
+                $("a.next").attr("href", next_url);
+                next_btn_enable = true;
+            }
+
+            $("li.next").removeClass("disabled");
+        }
+
+    });
+
+    $(document).keydown(function(down_event){
+        var keycode = down_event["keyCode"];
+
+        if(keycode == 37 && prev_btn_enable)
+            document.location.href = prev_url;
+        else if(keycode == 39 && next_btn_enable)
+            document.location.href = next_url;
+
+    });
+
 }
 
 </script>
