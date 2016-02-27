@@ -113,7 +113,7 @@ function init(){
         if(chap_id != chap_list.length - 1 || tt_id != tt_list.length - 1){
             var next_chap_id = chap_id;
             var next_tt_id = tt_id + 1;
-            if(next_tt_id == chap_list.length){
+            if(next_tt_id == tt_list.length){
                 next_tt_id = 0, next_chap_id += 1;
             
                 $.get(chap_list[next_chap_id] + "/list.txt", function(res){
