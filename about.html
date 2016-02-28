@@ -13,7 +13,7 @@
 <body>
 
 <div class="row">
-    <div class="col-md-8 col-md-offset-2">
+    <div class="col-md-8 col-md-offset-2 cont">
         <div class="page-header">
             <div class="row">
                 <div class="col-md-10"> <a href="index.html">
@@ -38,6 +38,17 @@ function init(){
     getArrayByFilename("info.txt", function(arr){
         novel_title.html(arr[0]);
         document.title = arr[0];
+    });
+    /*if(isUrlExists("txtall.txt")){
+        $("div.cont").append('<a href="txtall.txt" class="btn btn-primary">下載TXT</a>');
+    }*/
+
+    $.ajax({
+        url:"txtall.txt",
+        type:'HEAD',
+        success: function(){
+            $("div.cont").append('<a href="txtall.txt" class="btn btn-primary">下載TXT</a>');
+        }
     });
 }
 
