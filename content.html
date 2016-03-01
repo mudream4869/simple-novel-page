@@ -57,7 +57,7 @@ function init(){
     $("h3.tt-title").html(dict["chapter"] + "/" + removeFileExt(dict["tt"]));
 
     if(getFileExtByFilename(dict["tt"]) == "md"){
-        $.get(dict["chapter"] + "/" + dict["tt"], function(res){
+        $.get(dict["chapter"] + "/" + dict["tt"] + ".txt", function(res){
             $("div.tt-body").html(converter.makeHtml(res));
         });
     }else{
