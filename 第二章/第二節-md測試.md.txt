@@ -10,7 +10,7 @@
 +root
 |- chapters.txt
 |-+[第ㄧ章]
-| |- lists.txt
+| |- list.txt
 | |- [第一節].txt
 |
 |-+[第二章]
@@ -18,7 +18,7 @@
 ```
 
 `chapters.txt`裡面是`章`的列表
-`lists.txt`裡面是`節`的列表
+`list.txt`裡面是`節`的列表
 
 # 實作方法
 

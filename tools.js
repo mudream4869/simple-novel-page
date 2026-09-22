@@ -1,16 +1,24 @@
-function getArrayByFilename(filename, callback){
-    $.get(filename + "?" + Math.random(), function(res){
-        var arr = res.replace(/\n/g, " ").split(" ");
-        callback(arr);
-    });
+// 靜態空間不見得會送 no-cache，一律加亂數避開快取
+function noCacheUrl(filename){
+    return filename + "?" + Math.random();
 }
 
+// 讀檔，切成非空的行陣列
+function getArrayByFilename(filename, callback, errback){
+    return $.get(noCacheUrl(filename), function(res){
+        callback(getArrayByString(res));
+    }).fail(errback || $.noop);
+}
+
+// 一行一筆，去掉空行與行首尾空白（所以章節名可以含空白）
 function getArrayByString(input_str){
-    var arr = input_str.replace(/\n/g, " ").split(" ");
+    var lines = input_str.split(/\r?\n/);
     var ret_arr = [];
-    for(var i = 0; i < arr.length;i++)
-        if(arr[i] != "")
-            ret_arr.push(arr[i]);
+    for(var i = 0; i < lines.length; i++){
+        var line = $.trim(lines[i]);
+        if(line != "")
+            ret_arr.push(line);
+    }
 
     return ret_arr;
 }
@@ -20,49 +28,77 @@ function getNewDiv(){
 }
 
 function getParametersDict(){
-    href_list = document.location.href.split("?");
-    
-    if(href_list.length == 1)
+    var query = document.location.search.replace(/^\?/, "");
+    if(query == "")
         return {};
 
     var dict = {};
+    var para_list = query.split("&");
 
-    para_list = href_list[1].split("&");
-
-    for(var i = 0;i < para_list.length;i++){
-        para_line = para_list[i].split("=");
-        dict[para_line[0]] = decodeURIComponent(para_line[1]);
+    for(var i = 0; i < para_list.length; i++){
+        var para_line = para_list[i].split("=");
+        if(para_line[0] == "")
+            continue;
+        dict[decodeParameter(para_line[0])] = decodeParameter(para_line[1] || "");
     }
-    
+
     return dict;
 }
 
-function getFileExtByFilename(filename){
-    if(filename == "")
-        return "";
-    
-    var ret = "";
-    for(var i = filename.length-1; i >= 0;i--){
-        if(filename[i] == "."){
-            flag = true;
-            break;
-        }
-        ret = filename[i] + ret;
-    }
-
-    if(ret == filename)
-        return "";
-
-    return ret;
+function decodeParameter(str){
+    return decodeURIComponent(str.replace(/\+/g, " "));
 }
 
-function removeFileExt(filename){
-    var ret = "";
-    for(var i = 0;i < filename.length;i++){
-        if(filename[i] == ".")
-            break;
-        ret += filename[i];
-    }
+// 本頁唯一看得懂的副檔名，其餘的點都當作節名的一部分
+var KNOWN_EXTS = ["md"];
 
-    return ret;
+// 副檔名取最後一個點之後，沒有副檔名則回空字串
+function getFileExtByFilename(filename){
+    var pos = filename.lastIndexOf(".");
+    if(pos <= 0)
+        return "";
+
+    return filename.substring(pos + 1);
+}
+
+// 只去掉認得的副檔名，「第1.5節」這種節名要原樣保留
+function removeFileExt(filename){
+    var pos = filename.lastIndexOf(".");
+    if(pos <= 0)
+        return filename;
+
+    if($.inArray(filename.substring(pos + 1).toLowerCase(), KNOWN_EXTS) == -1)
+        return filename;
+
+    return filename.substring(0, pos);
+}
+
+// 章節名可能含 &、# 等字元，組 URL 一律編碼
+function getContentUrl(chapter, tt){
+    return "content.html?chapter=" + encodeURIComponent(chapter) +
+           "&tt=" + encodeURIComponent(tt);
+}
+
+function getChapterListUrl(chapter){
+    return encodeURIComponent(chapter) + "/list.txt";
+}
+
+function getTextUrl(chapter, tt){
+    return encodeURIComponent(chapter) + "/" + encodeURIComponent(tt) + ".txt";
+}
+
+// 純文字轉 HTML：先跳脫再把換行換成 <br>
+function textToHtml(str){
+    return getNewDiv().text(str).html().replace(/\r?\n/g, "<br>");
+}
+
+// 三個頁面共用的書名載入
+function initNovelTitle(){
+    getArrayByFilename("info.txt", function(arr){
+        if(arr.length == 0)
+            return;
+
+        $("h1.novel-title").text(arr[0]);
+        document.title = arr[0];
+    });
 }

@@ -1,16 +1,20 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
 <head>
-    <title> [小說書名] </title> 
+    <title> [小說書名] </title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.1.min.js"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery@1.12.1/dist/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.4/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.4/dist/css/bootstrap-theme.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.4/dist/js/bootstrap.min.js"></script>
 
-    <script type="text/javascript" src="tools.js?v0.3.6"></script>
+    <script type="text/javascript" src="tools.js?v0.4.0"></script>
 </head>
 
 <body >
 
+<div class="container">
 <div class="row">
     <div class="col-md-8 col-md-offset-2 div-body">
         <div class="page-header">
@@ -23,65 +27,56 @@
         </div>
     </div>
 </div>
+</div>
 
-<script language="javascript">
+<script>
 
 window.onload=init;
 
 function init(){
-    
-    novel_title = $("h1.novel-title");
-    div_body = $("div.div-body");
 
-    getArrayByFilename("info.txt", function(arr){
-        novel_title.html(arr[0]);
-        document.title = arr[0];
+    var div_body = $("div.div-body");
+
+    initNovelTitle();
+
+    getArrayByFilename("chapters.txt", function(chap_list){
+        for(var i = 0; i < chap_list.length; i++)
+            appendChapter(div_body, chap_list[i]);
+    }, function(){
+        div_body.append(getNewDiv().addClass("alert alert-danger")
+                                   .text("讀不到 chapters.txt"));
     });
 
-    getArrayByFilename("chapters.txt", function(arr){
+}
 
-        var i = 0;
-        asyncFor();
-        function asyncFor(){
-            if(i >= arr.length) 
-                return;
+// 先照順序把章掛上去，各章的節列表再平行載入填進來
+function appendChapter(div_body, chapter_name){
 
-            var chapter_name = arr[i];
-            
-            if(chapter_name == ""){
-                i += 1;
-                asyncFor();
-                return;
-            }
+    var newdiv = getNewDiv();
+    var newdiv_head = getNewDiv();
+    var newdiv_body = getNewDiv();
+    var newdiv_list = getNewDiv();
 
-            var newdiv = getNewDiv(); 
-            var newdiv_head = getNewDiv(); 
-            var newdiv_body = getNewDiv(); 
-            var newdiv_list = getNewDiv();
+    newdiv.addClass("panel panel-default");
+    newdiv_head.addClass("panel-heading");
+    newdiv_head.append($("<h3>").addClass("panel-title").text(chapter_name));
+    newdiv_body.addClass("panel-body");
+    newdiv_list.addClass("list-group");
 
-            newdiv.addClass("panel panel-default");
-            newdiv_head.addClass("panel-heading");
-            newdiv_head.html('<h3 class="panel-title">' + chapter_name+ '</h3>')
-            newdiv_body.addClass("panel-body");
-            newdiv_list.addClass("list-group");
+    newdiv_body.append(newdiv_list);
+    newdiv.append(newdiv_head);
+    newdiv.append(newdiv_body);
+    div_body.append(newdiv);
 
-            getArrayByFilename(chapter_name + "/list.txt", function(arr2){
-                for(var j = 0;j < arr2.length;j++){
-                    var tt = arr2[j];
-                    if(tt == "")
-                        continue;
-                    ahref = "content.html?chapter=" + chapter_name + "&tt=" + tt;
-                    newdiv_list.append('<a href="' + ahref + '" class="list-group-item">' + removeFileExt(tt) + '</a>');
-                }
-
-                newdiv_body.append(newdiv_list);
-                newdiv.append(newdiv_head);
-                newdiv.append(newdiv_body);
-                div_body.append(newdiv);
-                i += 1;
-                asyncFor();
-            });
+    getArrayByFilename(getChapterListUrl(chapter_name), function(tt_list){
+        for(var j = 0; j < tt_list.length; j++){
+            newdiv_list.append($("<a>").addClass("list-group-item")
+                                       .attr("href", getContentUrl(chapter_name, tt_list[j]))
+                                       .text(removeFileExt(tt_list[j])));
         }
+    }, function(){
+        newdiv_list.append(getNewDiv().addClass("list-group-item text-danger")
+                                      .text("讀不到 " + chapter_name + "/list.txt"));
     });
 
 }
@@ -90,3 +85,4 @@ function init(){
 
 
 </body>
+</html>
