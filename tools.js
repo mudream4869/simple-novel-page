@@ -117,3 +117,115 @@ function initNovelTitle(){
         document.title = arr[0];
     });
 }
+
+function escapeHtml(str){
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+              .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+
+// 極簡 Markdown：只支援常用語法，原始 HTML 一律跳脫
+var MD_FENCE = /^\s*(`{3,}|~{3,})/;
+var MD_HEADING = /^\s*(#{1,6})\s*(.*?)(?:\s+#+)?\s*$/;
+var MD_HR = /^\s*([-*_])(?:\s*\1){2,}\s*$/;
+var MD_QUOTE = /^\s*> ?/;
+var MD_UL = /^\s*[-*+]\s+(.*)$/;
+var MD_OL = /^\s*\d+[.)]\s+(.*)$/;
+
+function markdownToHtml(src){
+    return mdBlocks(src.replace(/\r\n?/g, "\n").split("\n")).join("\n");
+}
+
+function mdIsBlockStart(line){
+    return MD_FENCE.test(line) || MD_HEADING.test(line) || MD_HR.test(line) ||
+           MD_QUOTE.test(line) || MD_UL.test(line) || MD_OL.test(line);
+}
+
+function mdBlocks(lines){
+    var out = [];
+    var i = 0;
+    var m;
+
+    while(i < lines.length){
+        var line = lines[i];
+
+        if(line.trim() == ""){
+            i++;
+        }else if((m = line.match(MD_FENCE))){
+            var code = [];
+            for(i++; i < lines.length && lines[i].trim().indexOf(m[1]) != 0; i++)
+                code.push(lines[i]);
+            i++;
+            out.push("<pre><code>" + escapeHtml(code.join("\n")) + "</code></pre>");
+        }else if((m = line.match(MD_HEADING))){
+            var n = m[1].length;
+            out.push("<h" + n + ">" + mdInline(m[2]) + "</h" + n + ">");
+            i++;
+        }else if(MD_HR.test(line)){
+            out.push("<hr>");
+            i++;
+        }else if(MD_QUOTE.test(line)){
+            var quote = [];
+            for(; i < lines.length && MD_QUOTE.test(lines[i]); i++)
+                quote.push(lines[i].replace(MD_QUOTE, ""));
+            out.push("<blockquote>\n" + mdBlocks(quote).join("\n") + "\n</blockquote>");
+        }else if(MD_UL.test(line) || MD_OL.test(line)){
+            var re = MD_UL.test(line) ? MD_UL : MD_OL;
+            var items = [];
+            // 縮排的後續行併入同一項；不支援巢狀
+            for(; i < lines.length && lines[i].trim() != ""; i++){
+                if((m = lines[i].match(re)))
+                    items.push(m[1]);
+                else if(/^\s/.test(lines[i]) && !mdIsBlockStart(lines[i]))
+                    items[items.length - 1] += "\n" + lines[i].trim();
+                else
+                    break;
+            }
+            var tag = re == MD_UL ? "ul" : "ol";
+            out.push("<" + tag + ">\n<li>" + items.map(mdInline).join("</li>\n<li>") +
+                     "</li>\n</" + tag + ">");
+        }else{
+            var para = [];
+            for(; i < lines.length && lines[i].trim() != "" &&
+                  (para.length == 0 || !mdIsBlockStart(lines[i])); i++)
+                para.push(lines[i].replace(/^\s+/, ""));
+            out.push("<p>" + mdInline(para.join("\n")) + "</p>");
+        }
+    }
+
+    return out;
+}
+
+// 已產生的 HTML 先換成佔位字元，避免被後面的規則再處理
+function mdInline(text){
+    var saved = [];
+    function save(html){
+        saved.push(html);
+        return "\u0000" + (saved.length - 1) + "\u0000";
+    }
+
+    text = text
+        .replace(/(`+)([\s\S]*?[^`])\1(?!`)/g, function(_, tick, code){
+            return save("<code>" + escapeHtml(code.trim()) + "</code>");
+        })
+        .replace(/\\([\\`*_{}\[\]()#+\-.!>~|])/g, function(_, c){
+            return save(escapeHtml(c));
+        });
+
+    var link = /(!?)\[([^\]]*)\]\(\s*([^\s)]+)(?:\s+&quot;(.*?)&quot;)?\s*\)/g;
+
+    text = escapeHtml(text)
+        .replace(link, function(_, img, label, url, title){
+            var t = title ? ' title="' + title + '"' : "";
+            if(img)
+                return save('<img src="' + url + '" alt="' + label + '"' + t + ">");
+            return save('<a href="' + url + '"' + t + ">") + label + save("</a>");
+        })
+        .replace(/(\*\*|__)(?=\S)([\s\S]*?\S)\1/g, "<strong>$2</strong>")
+        .replace(/\*(?=\S)([\s\S]*?\S)\*/g, "<em>$1</em>")
+        .replace(/(^|\W)_(?=\S)([\s\S]*?\S)_(?!\w)/g, "$1<em>$2</em>")
+        .replace(/ {2,}\n/g, "<br>\n");
+
+    return text.replace(/\u0000(\d+)\u0000/g, function(_, k){
+        return saved[k];
+    });
+}
