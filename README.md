@@ -38,20 +38,14 @@ Markdown 由 `tools.js` 內建的簡易轉換器處理，不需外部函式庫�
 
 `.md` 是唯一會被當成副檔名的東西，所以節名裡可以有點，例如 `第1.5節` 會原樣顯示。
 
-## 範例
+## 部署到 GitHub Pages
 
-範例：[使用DropBox搭配DropPages](http://simple-novel-page.droppages.com/index.html)
+純靜態網站，不需要建置或 CI。
 
-### 第一步
+1. Fork 或把所有檔案放進自己的 repo
+2. 到 **Settings → Pages**，Source 選 **Deploy from a branch**，分支選 `main`、資料夾選 `/ (root)`
+3. 打開 `https://[帳號].github.io/[repo 名稱]/`
 
-開通DropPages
+之後改內容只要 push，Pages 會自動重新部署。
 
-### 第二步
-
-把所有檔案（就github上這些檔案）放在`Public`資料夾底下
-
-### 第三步
-
-打開`http://[page-name].droppages.com/index.html`
-
-假如嫌後面多出`index.html`麻煩，可以去設定`Templates/base.html`轉到`index.html`
+根目錄的 `.nojekyll` 用來關掉 Jekyll 處理，避免 `_` 開頭的檔案被略過，請保留。
