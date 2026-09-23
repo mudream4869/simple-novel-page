@@ -1,0 +1,282 @@
+/* 取代 Bootstrap 3，只留本站用到的部分 */
+
+:root {
+    --text: #333;
+    --muted: #777;
+    --bg: #fff;
+    --border: #ddd;
+    --panel-head: #f5f5f5;
+    --hover: #f5f5f5;
+    --link: #337ab7;
+    --reading-bg: #e7f3ed;
+    --danger: #a94442;
+    --danger-bg: #f2dede;
+    --danger-border: #ebccd1;
+    --info: #5bc0de;
+    --info-border: #46b8da;
+    --primary: #337ab7;
+    --primary-border: #2e6da4;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: "Helvetica Neue", Helvetica, Arial, "PingFang TC", "Microsoft JhengHei", sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text);
+    background: var(--bg);
+}
+
+a {
+    color: var(--link);
+    text-decoration: none;
+}
+
+a:hover, a:focus {
+    text-decoration: underline;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 20px 0 10px;
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+h1 { font-size: 36px; }
+h2 { font-size: 30px; }
+h3 { font-size: 24px; }
+h4 { font-size: 18px; }
+
+p { margin: 0 0 10px; }
+
+img { max-width: 100%; }
+
+/* 版面 */
+
+.container {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 0 15px 20px;
+}
+
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin: 20px 0;
+    padding-bottom: 9px;
+    border-bottom: 1px solid #eee;
+}
+
+.page-header h1 {
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.page-header > a:first-child:hover {
+    text-decoration: none;
+}
+
+/* 按鈕 */
+
+.btn {
+    display: inline-block;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #fff;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.btn:hover, .btn:focus {
+    text-decoration: none;
+    filter: brightness(0.92);
+}
+
+.btn-lg {
+    padding: 10px 16px;
+    font-size: 18px;
+    border-radius: 6px;
+}
+
+.btn-info {
+    background: var(--info);
+    border-color: var(--info-border);
+}
+
+.btn-primary {
+    background: var(--primary);
+    border-color: var(--primary-border);
+}
+
+/* 章節區塊 */
+
+.panel {
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.panel-heading {
+    padding: 10px 15px;
+    background: var(--panel-head);
+    border-bottom: 1px solid var(--border);
+}
+
+.panel-title {
+    margin: 0;
+    font-size: 16px;
+}
+
+.panel-body {
+    padding: 15px;
+}
+
+.list-group {
+    margin: 0;
+}
+
+.list-group-item {
+    display: block;
+    padding: 10px 15px;
+    border: 1px solid var(--border);
+    margin-bottom: -1px;
+}
+
+.list-group-item:first-child { border-radius: 4px 4px 0 0; }
+.list-group-item:last-child { border-radius: 0 0 4px 4px; margin-bottom: 0; }
+.list-group-item:only-child { border-radius: 4px; }
+
+a.list-group-item:hover, a.list-group-item:focus {
+    text-decoration: none;
+    background: var(--hover);
+}
+
+/* 內文 */
+
+.tt-body {
+    font-size: 120%;
+    background: var(--reading-bg);
+    overflow-wrap: break-word;
+}
+
+/* 下載TXT 按鈕接在簡介後面 */
+.about-body {
+    margin-bottom: 15px;
+}
+
+/* showdown 產生的元素 */
+
+.tt-body pre, .tt-body code {
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    font-size: 90%;
+}
+
+.tt-body code {
+    padding: 2px 4px;
+    background: rgba(0, 0, 0, 0.06);
+    border-radius: 4px;
+}
+
+.tt-body pre {
+    padding: 10px;
+    overflow: auto;
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+}
+
+.tt-body pre code {
+    padding: 0;
+    background: none;
+}
+
+.tt-body blockquote {
+    margin: 0 0 10px;
+    padding: 5px 15px;
+    border-left: 5px solid var(--border);
+}
+
+.tt-body table {
+    border-collapse: collapse;
+    margin-bottom: 10px;
+}
+
+.tt-body th, .tt-body td {
+    padding: 5px 8px;
+    border: 1px solid var(--border);
+}
+
+.tt-body hr {
+    border: 0;
+    border-top: 1px solid var(--border);
+}
+
+/* 提示 */
+
+.text-danger {
+    color: var(--danger);
+}
+
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+.alert-danger {
+    color: var(--danger);
+    background: var(--danger-bg);
+    border-color: var(--danger-border);
+}
+
+/* 翻頁 */
+
+.pager {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 0;
+    padding: 0;
+    list-style: none;
+}
+
+.pager a {
+    display: inline-block;
+    padding: 5px 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 15px;
+}
+
+.pager a:hover, .pager a:focus {
+    text-decoration: none;
+    background: var(--hover);
+}
+
+/* href 還是 "#"，不能讓人點 */
+.pager .disabled a {
+    color: var(--muted);
+    pointer-events: none;
+}
+
+@media (max-width: 480px) {
+    h1 { font-size: 28px; }
+
+    .btn-lg {
+        padding: 8px 12px;
+        font-size: 16px;
+    }
+}
