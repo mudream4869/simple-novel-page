@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-    <title> [小說書名] </title>
+    <title></title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="style.css?v0.6.0">
-    <script type="text/javascript" src="tools.js?v0.6.0"></script>
+    <link rel="stylesheet" href="style.css?v0.7.0">
+    <script type="text/javascript" src="tools.js?v0.7.0"></script>
 
 </head>
 
@@ -13,25 +13,22 @@
 
 <div class="container">
     <header class="page-header">
-        <a href="index.html"><h1 class="novel-title">[小說書名]</h1></a>
+        <a href="index.html"><h1 class="novel-title"></h1></a>
         <a href="about.html" class="btn btn-info btn-lg">簡介</a>
     </header>
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h3 class="panel-title tt-title">[章名]/[節名]</h3>
+            <h3 class="panel-title tt-title"></h3>
         </div>
-        <div class="panel-body tt-body">
-            [行一] <br><br>
-            [行二]
-        </div>
+        <div class="panel-body tt-body">載入中…</div>
     </div>
     <nav>
         <ul class="pager">
             <li class="previous disabled">
-                <a href="#" class="previous"><span aria-hidden="true">&larr;</span> Older</a>
+                <a href="#" class="previous"><span aria-hidden="true">&larr;</span> 上一節</a>
             </li>
             <li class="next disabled">
-                <a href="#" class="next">Newer <span aria-hidden="true">&rarr;</span></a>
+                <a href="#" class="next">下一節 <span aria-hidden="true">&rarr;</span></a>
             </li>
         </ul>
     </nav>
@@ -57,6 +54,10 @@ function init(){
     document.addEventListener("keydown", function(down_event){
         var key = down_event.key;
 
+        // Alt+← 等是瀏覽器自己的快捷鍵
+        if(down_event.altKey || down_event.ctrlKey || down_event.metaKey || down_event.shiftKey)
+            return;
+
         if(key == "ArrowLeft" && pager_url["previous"])
             document.location.href = pager_url["previous"];
         else if(key == "ArrowRight" && pager_url["next"])
@@ -67,8 +68,8 @@ function init(){
 function loadContent(chapter, tt){
     var tt_body = document.querySelector("div.tt-body");
 
-    fetchText(getTextUrl(chapter, tt)).then(function(res){
-        if(getFileExtByFilename(tt) == "md")
+    fetchText(noCacheUrl(getTextUrl(chapter, tt))).then(function(res){
+        if(getFileExtByFilename(tt).toLowerCase() == "md")
             tt_body.innerHTML = markdownToHtml(res);
         else
             tt_body.innerHTML = textToHtml(res);

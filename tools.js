@@ -125,7 +125,8 @@ function escapeHtml(str){
 
 // 極簡 Markdown：只支援常用語法，原始 HTML 一律跳脫
 var MD_FENCE = /^\s*(`{3,}|~{3,})/;
-var MD_HEADING = /^\s*(#{1,6})\s*(.*?)(?:\s+#+)?\s*$/;
+// # 後面要有空白，「#hashtag」不算標題
+var MD_HEADING = /^\s*(#{1,6})(?:\s+(.*?)(?:\s+#+)?)?\s*$/;
 var MD_HR = /^\s*([-*_])(?:\s*\1){2,}\s*$/;
 var MD_QUOTE = /^\s*> ?/;
 var MD_UL = /^\s*[-*+]\s+(.*)$/;
@@ -158,7 +159,7 @@ function mdBlocks(lines){
             out.push("<pre><code>" + escapeHtml(code.join("\n")) + "</code></pre>");
         }else if((m = line.match(MD_HEADING))){
             var n = m[1].length;
-            out.push("<h" + n + ">" + mdInline(m[2]) + "</h" + n + ">");
+            out.push("<h" + n + ">" + mdInline(m[2] || "") + "</h" + n + ">");
             i++;
         }else if(MD_HR.test(line)){
             out.push("<hr>");
@@ -211,10 +212,12 @@ function mdInline(text){
             return save(escapeHtml(c));
         });
 
-    var link = /(!?)\[([^\]]*)\]\(\s*([^\s)]+)(?:\s+&quot;(.*?)&quot;)?\s*\)/g;
+    // 網址允許一層成對括號，例如維基百科的連結
+    var link = /(!?)\[([^\]]*)\]\(\s*((?:[^\s()]|\([^\s()]*\))+)(?:\s+&quot;(.*?)&quot;)?\s*\)/g;
 
     text = escapeHtml(text)
         .replace(link, function(_, img, label, url, title){
+            url = mdSafeUrl(url);
             var t = title ? ' title="' + title + '"' : "";
             if(img)
                 return save('<img src="' + url + '" alt="' + label + '"' + t + ">");
@@ -228,4 +231,12 @@ function mdInline(text){
     return text.replace(/\u0000(\d+)\u0000/g, function(_, k){
         return saved[k];
     });
+}
+
+// 只放行 http(s)、mailto 與相對路徑，擋掉 javascript: 之類
+function mdSafeUrl(url){
+    var m = url.replace(/[\u0000-\u0020\u007F]/g, "").match(/^([^\/?#]*?):/);
+    if(m && !/^(https?|mailto)$/i.test(m[1]))
+        return "#";
+    return url;
 }

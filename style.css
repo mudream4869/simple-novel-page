@@ -12,10 +12,32 @@
     --danger: #a94442;
     --danger-bg: #f2dede;
     --danger-border: #ebccd1;
-    --info: #5bc0de;
-    --info-border: #46b8da;
+    --info: #1f7a99;
+    --info-border: #1a6882;
     --primary: #337ab7;
     --primary-border: #2e6da4;
+    --rule: #eee;
+    --code-bg: rgba(0, 0, 0, 0.06);
+    --pre-bg: rgba(0, 0, 0, 0.04);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --text: #ddd;
+        --muted: #999;
+        --bg: #1b1d1f;
+        --border: #3a3d40;
+        --panel-head: #25282b;
+        --hover: #2c3033;
+        --link: #7ab8ef;
+        --reading-bg: #1f2a25;
+        --danger: #f09a9a;
+        --danger-bg: #3a2224;
+        --danger-border: #5a3033;
+        --rule: #2c3033;
+        --code-bg: rgba(255, 255, 255, 0.08);
+        --pre-bg: rgba(255, 255, 255, 0.05);
+    }
 }
 
 *, *::before, *::after {
@@ -24,6 +46,7 @@
 
 html {
     -webkit-text-size-adjust: 100%;
+    color-scheme: light dark;
 }
 
 body {
@@ -74,7 +97,7 @@ img { max-width: 100%; }
     gap: 15px;
     margin: 20px 0;
     padding-bottom: 9px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--rule);
 }
 
 .page-header h1 {
@@ -186,14 +209,14 @@ a.list-group-item:hover, a.list-group-item:focus {
 
 .tt-body code {
     padding: 2px 4px;
-    background: rgba(0, 0, 0, 0.06);
+    background: var(--code-bg);
     border-radius: 4px;
 }
 
 .tt-body pre {
     padding: 10px;
     overflow: auto;
-    background: rgba(0, 0, 0, 0.04);
+    background: var(--pre-bg);
     border: 1px solid var(--border);
     border-radius: 4px;
 }
