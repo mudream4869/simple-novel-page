@@ -4,12 +4,10 @@
     <title> [小說書名] </title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery@1.12.1/dist/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.4/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.4/dist/css/bootstrap-theme.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.4/dist/js/bootstrap.min.js"></script>
 
-    <script type="text/javascript" src="tools.js?v0.4.0"></script>
+    <script type="text/javascript" src="tools.js?v0.5.0"></script>
 
 </head>
 
@@ -41,17 +39,17 @@ function init(){
     initNovelTitle();
 
     // 有 about.txt 就拿來當簡介，沒有就留著預設文字
-    $.get(noCacheUrl("about.txt"), function(res){
-        $("div.about-body").html(textToHtml(res));
-    });
+    fetchText(noCacheUrl("about.txt")).then(function(res){
+        document.querySelector("div.about-body").innerHTML = textToHtml(res);
+    }, function(){});
 
-    $.ajax({
-        url:"txtall.txt",
-        type:'HEAD',
-        success: function(){
-            $("div.cont").append('<a href="txtall.txt" class="btn btn-primary">下載TXT</a>');
-        }
-    });
+    fetch("txtall.txt", {method: "HEAD"}).then(function(r){
+        if(!r.ok)
+            return;
+        var btn = el("a", "btn btn-primary", "下載TXT");
+        btn.href = "txtall.txt";
+        document.querySelector("div.cont").appendChild(btn);
+    }, function(){});
 }
 
 </script>

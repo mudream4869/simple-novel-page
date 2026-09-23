@@ -4,13 +4,11 @@
     <title> [小說書名] </title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery@1.12.1/dist/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.4/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.4/dist/css/bootstrap-theme.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.4/dist/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/showdown@1.9.1/dist/showdown.min.js"></script>
 
-    <script type="text/javascript" src="tools.js?v0.4.0"></script>
+    <script type="text/javascript" src="tools.js?v0.5.0"></script>
 
 </head>
 
@@ -65,41 +63,42 @@ function init(){
     var tt = dict["tt"] || "";
 
     initNovelTitle();
-    $("h3.tt-title").text(chapter + "/" + removeFileExt(tt));
+    document.querySelector("h3.tt-title").textContent = chapter + "/" + removeFileExt(tt);
 
     loadContent(chapter, tt);
     initPager(chapter, tt);
 
-    $(document).keydown(function(down_event){
-        var keycode = down_event.which;
+    document.addEventListener("keydown", function(down_event){
+        var key = down_event.key;
 
-        if(keycode == 37 && pager_url["previous"])
+        if(key == "ArrowLeft" && pager_url["previous"])
             document.location.href = pager_url["previous"];
-        else if(keycode == 39 && pager_url["next"])
+        else if(key == "ArrowRight" && pager_url["next"])
             document.location.href = pager_url["next"];
     });
 }
 
 function loadContent(chapter, tt){
-    var tt_body = $("div.tt-body");
+    var tt_body = document.querySelector("div.tt-body");
 
-    $.get(getTextUrl(chapter, tt), function(res){
+    fetchText(getTextUrl(chapter, tt)).then(function(res){
         if(getFileExtByFilename(tt) == "md")
-            tt_body.html(converter.makeHtml(res));
+            tt_body.innerHTML = converter.makeHtml(res);
         else
-            tt_body.html(textToHtml(res));
-    }).fail(function(){
-        tt_body.empty().append(getNewDiv().addClass("text-danger")
-                                          .text("讀不到這一節的內容：" + chapter + "/" + tt));
+            tt_body.innerHTML = textToHtml(res);
+    }, function(){
+        tt_body.textContent = "";
+        tt_body.appendChild(el("div", "text-danger",
+                               "讀不到這一節的內容：" + chapter + "/" + tt));
     });
 }
 
 function initPager(chapter, tt){
-    $.when($.get(noCacheUrl("chapters.txt")),
-           $.get(noCacheUrl(getChapterListUrl(chapter)))
-    ).done(function(chap_res, tt_res){
-        var chap_list = getArrayByString(chap_res[0]);
-        var tt_list = getArrayByString(tt_res[0]);
+    Promise.all([fetchText(noCacheUrl("chapters.txt")),
+                 fetchText(noCacheUrl(getChapterListUrl(chapter)))]
+    ).then(function(res){
+        var chap_list = getArrayByString(res[0]);
+        var tt_list = getArrayByString(res[1]);
         var chap_id = chap_list.indexOf(chapter);
         var tt_id = tt_list.indexOf(tt);
 
@@ -109,6 +108,8 @@ function initPager(chapter, tt){
 
         setupPrev(chap_list, tt_list, chap_id, tt_id);
         setupNext(chap_list, tt_list, chap_id, tt_id);
+    }, function(){
+        // 列表讀不到就不開前後頁
     });
 }
 
@@ -151,8 +152,8 @@ function setupNext(chap_list, tt_list, chap_id, tt_id){
 // href 設好才解除 disabled，不然按鈕會先出現但連到 "#"
 function enablePager(dir, chapter, tt){
     pager_url[dir] = getContentUrl(chapter, tt);
-    $("a." + dir).attr("href", pager_url[dir]);
-    $("li." + dir).removeClass("disabled");
+    document.querySelector("a." + dir).href = pager_url[dir];
+    document.querySelector("li." + dir).classList.remove("disabled");
 }
 
 </script>

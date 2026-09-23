@@ -3,11 +3,20 @@ function noCacheUrl(filename){
     return filename + "?" + Math.random();
 }
 
+// fetch 遇到 404 不會 reject，要自己擋
+function fetchText(url){
+    return fetch(url).then(function(r){
+        if(!r.ok)
+            throw new Error(r.status + " " + url);
+        return r.text();
+    });
+}
+
 // 讀檔，切成非空的行陣列
 function getArrayByFilename(filename, callback, errback){
-    return $.get(noCacheUrl(filename), function(res){
+    return fetchText(noCacheUrl(filename)).then(function(res){
         callback(getArrayByString(res));
-    }).fail(errback || $.noop);
+    }, errback || function(){});
 }
 
 // 一行一筆，去掉空行與行首尾空白（所以章節名可以含空白）
@@ -15,7 +24,7 @@ function getArrayByString(input_str){
     var lines = input_str.split(/\r?\n/);
     var ret_arr = [];
     for(var i = 0; i < lines.length; i++){
-        var line = $.trim(lines[i]);
+        var line = lines[i].trim();
         if(line != "")
             ret_arr.push(line);
     }
@@ -23,8 +32,14 @@ function getArrayByString(input_str){
     return ret_arr;
 }
 
-function getNewDiv(){
-    return $(document.createElement("div"));
+// cls、text 可省略
+function el(tag, cls, text){
+    var e = document.createElement(tag);
+    if(cls)
+        e.className = cls;
+    if(text !== undefined)
+        e.textContent = text;
+    return e;
 }
 
 function getParametersDict(){
@@ -67,7 +82,7 @@ function removeFileExt(filename){
     if(pos <= 0)
         return filename;
 
-    if($.inArray(filename.substring(pos + 1).toLowerCase(), KNOWN_EXTS) == -1)
+    if(KNOWN_EXTS.indexOf(filename.substring(pos + 1).toLowerCase()) == -1)
         return filename;
 
     return filename.substring(0, pos);
@@ -89,7 +104,7 @@ function getTextUrl(chapter, tt){
 
 // 純文字轉 HTML：先跳脫再把換行換成 <br>
 function textToHtml(str){
-    return getNewDiv().text(str).html().replace(/\r?\n/g, "<br>");
+    return el("div", "", str).innerHTML.replace(/\r?\n/g, "<br>");
 }
 
 // 三個頁面共用的書名載入
@@ -98,7 +113,7 @@ function initNovelTitle(){
         if(arr.length == 0)
             return;
 
-        $("h1.novel-title").text(arr[0]);
+        document.querySelector("h1.novel-title").textContent = arr[0];
         document.title = arr[0];
     });
 }
