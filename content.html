@@ -4,10 +4,8 @@
     <title> [小說書名] </title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="style.css?v0.5.0">
-    <script src="https://cdn.jsdelivr.net/npm/showdown@1.9.1/dist/showdown.min.js"></script>
-
-    <script type="text/javascript" src="tools.js?v0.5.0"></script>
+    <link rel="stylesheet" href="style.css?v0.6.0">
+    <script type="text/javascript" src="tools.js?v0.6.0"></script>
 
 </head>
 
@@ -43,7 +41,6 @@
 
 window.onload=init;
 
-var converter = new showdown.Converter();
 var pager_url = {};
 
 function init(){
@@ -72,7 +69,7 @@ function loadContent(chapter, tt){
 
     fetchText(getTextUrl(chapter, tt)).then(function(res){
         if(getFileExtByFilename(tt) == "md")
-            tt_body.innerHTML = converter.makeHtml(res);
+            tt_body.innerHTML = markdownToHtml(res);
         else
             tt_body.innerHTML = textToHtml(res);
     }, function(){

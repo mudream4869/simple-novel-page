@@ -177,7 +177,7 @@ a.list-group-item:hover, a.list-group-item:focus {
     margin-bottom: 15px;
 }
 
-/* showdown 產生的元素 */
+/* Markdown 產生的元素 */
 
 .tt-body pre, .tt-body code {
     font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
@@ -207,16 +207,6 @@ a.list-group-item:hover, a.list-group-item:focus {
     margin: 0 0 10px;
     padding: 5px 15px;
     border-left: 5px solid var(--border);
-}
-
-.tt-body table {
-    border-collapse: collapse;
-    margin-bottom: 10px;
-}
-
-.tt-body th, .tt-body td {
-    padding: 5px 8px;
-    border: 1px solid var(--border);
 }
 
 .tt-body hr {
